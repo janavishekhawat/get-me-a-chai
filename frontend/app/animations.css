@@ -1,0 +1,81 @@
+/* ==== Default (for small & medium screens) ==== */
+@keyframes bgFade {
+    0% {
+        width: 0;
+        opacity: 0;
+    }
+
+    100% {
+        width: 100%;
+        opacity: 1;
+    }
+}
+
+.animate-bgFade {
+    animation: bgFade 1.3s linear forwards;
+}
+
+/* ==== For large screens (lg and above) ==== */
+@media (min-width: 1024px) {
+    @keyframes bgFadeLg {
+        0% {
+            width: 0;
+            opacity: 0;
+        }
+
+        100% {
+            width: 55%;
+            opacity: 1;
+        }
+    }
+
+    .animate-bgFade {
+        animation: bgFadeLg 1.3s linear forwards;
+    }
+}
+
+@keyframes textAppear {
+    0% {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-textAppear {
+    animation: textAppear 1.3s ease-in-out 0.5s forwards;
+}
+
+@keyframes thetext {
+    0% {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-thetext {
+    animation: thetext 1.3s ease-in-out 0.35s forwards;
+}
+
+@keyframes thetextis {
+    0% {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-thetextis {
+    animation: thetext 1.3s ease-in-out 0.35s forwards;
+}
