@@ -11,6 +11,64 @@ import Sidebar from "./Sidebar";
 import axios from "axios";
 import ProfileImage from "./ProfileImage/ProfileImage";
 
+const SearchForm = ({
+  mobile = false,
+  username,
+  handleChange,
+  handleSearch,
+  openSearchList,
+  searchResults,
+  selectCreator,
+  searchRef,
+}) => (
+  <form
+    onSubmit={handleSearch}
+    className={`relative w-full ${mobile ? "max-w-none" : "max-w-[350px]"}`}
+  >
+    <IoSearch className="absolute text-gray-400 left-4 top-1/2 -translate-y-1/2 text-[20px] pointer-events-none" />
+
+    <input
+      ref={mobile ? searchRef : undefined}
+      type="text"
+      value={username}
+      onChange={handleChange}
+      placeholder="Search creators..."
+      aria-label="Search creators"
+      className="w-full pl-11 pr-4 h-[44px] rounded-full border border-gray-200 bg-[#F5F1EB] text-gray-800 placeholder-gray-400 outline-none focus:border-[#C47A2C] focus:ring-4 focus:ring-[#C47A2C]/10 transition-all duration-300 shadow-sm"
+    />
+
+    {openSearchList && searchResults.length > 0 && (
+      <div className="absolute top-[50px] left-0 w-full max-h-[60vh] overflow-y-auto bg-white rounded-2xl shadow-xl border border-gray-100 z-[130]">
+        {searchResults.map((u) => (
+          <button
+            type="button"
+            key={u._id}
+            onClick={() => selectCreator(u)}
+            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#FDFBF7] transition-colors group"
+          >
+            <div className="relative w-10 h-10 shrink-0">
+              <ProfileImage
+                src={u.profileImage}
+                alt={u.username}
+                className="w-full h-full rounded-full object-cover border border-gray-100"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-gray-800 group-hover:text-[#C47A2C]">
+                {u.username}
+              </span>
+              <span className="text-xs text-gray-400">
+                View Creator Profile
+              </span>
+            </div>
+          </button>
+        ))}
+      </div>
+    )}
+  </form>
+);
+
 const Navbar = () => {
   const navRef = useRef(null);
   const searchRef = useRef(null);
@@ -94,7 +152,7 @@ const Navbar = () => {
 
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/creator/searchWord/${encodeURIComponent(value)}`
+        `http://localhost:5000/api/creator/searchWord/${encodeURIComponent(value)}`,
       );
 
       setSearchResults(res.data.selectedName || []);
@@ -113,55 +171,6 @@ const Navbar = () => {
     setOpenSearchList(false);
   };
 
-  const SearchForm = ({ mobile = false }) => (
-    <form
-      onSubmit={handleSearch}
-      className={`relative w-full ${mobile ? "max-w-none" : "max-w-[350px]"}`}
-    >
-      <IoSearch className="absolute text-gray-400 left-4 top-1/2 -translate-y-1/2 text-[20px] pointer-events-none" />
-
-      <input
-        ref={mobile ? searchRef : undefined}
-        type="text"
-        value={username}
-        onChange={handleChange}
-        placeholder="Search creators..."
-        aria-label="Search creators"
-        className="w-full pl-11 pr-4 h-[44px] rounded-full border border-gray-200 bg-[#F5F1EB] text-gray-800 placeholder-gray-400 outline-none focus:border-[#C47A2C] focus:ring-4 focus:ring-[#C47A2C]/10 transition-all duration-300 shadow-sm"
-      />
-
-      {openSearchList && searchResults.length > 0 && (
-        <div className="absolute top-[50px] left-0 w-full max-h-[60vh] overflow-y-auto bg-white rounded-2xl shadow-xl border border-gray-100 z-[130]">
-          {searchResults.map((u) => (
-            <button
-              type="button"
-              key={u._id}
-              onClick={() => selectCreator(u)}
-              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#FDFBF7] transition-colors group"
-            >
-              <div className="relative w-10 h-10 shrink-0">
-                <ProfileImage
-                  src={u.profileImage}
-                  alt={u.username}
-                  className="w-full h-full rounded-full object-cover border border-gray-100"
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-gray-800 group-hover:text-[#C47A2C]">
-                  {u.username}
-                </span>
-                <span className="text-xs text-gray-400">
-                  View Creator Profile
-                </span>
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
-    </form>
-  );
-
   return (
     <>
       <nav
@@ -174,13 +183,9 @@ const Navbar = () => {
               : "transparent"
             : "#FDFBF7",
           boxShadow:
-            scrolled || !isHome
-              ? "0 4px 12px -2px rgba(0,0,0,0.08)"
-              : "none",
+            scrolled || !isHome ? "0 4px 12px -2px rgba(0,0,0,0.08)" : "none",
           borderBottom:
-            scrolled || !isHome
-              ? "1px solid rgba(0,0,0,0.05)"
-              : "none",
+            scrolled || !isHome ? "1px solid rgba(0,0,0,0.05)" : "none",
         }}
       >
         {/* Logo */}
@@ -197,7 +202,14 @@ const Navbar = () => {
         {/* Desktop Search */}
         <div className="hidden md:flex flex-1 justify-center px-6">
           <div className="w-full max-w-[350px]">
-            <SearchForm />
+            <SearchForm
+              username={username}
+              handleChange={handleChange}
+              handleSearch={handleSearch}
+              openSearchList={openSearchList}
+              searchResults={searchResults}
+              selectCreator={selectCreator}
+            />
           </div>
         </div>
 
@@ -261,7 +273,16 @@ const Navbar = () => {
           <div className="relative z-[121] w-full px-4 pt-4">
             <div className="flex items-center gap-3">
               <div className="flex-1">
-                <SearchForm mobile />
+                <SearchForm
+                  mobile
+                  username={username}
+                  handleChange={handleChange}
+                  handleSearch={handleSearch}
+                  openSearchList={openSearchList}
+                  searchResults={searchResults}
+                  selectCreator={selectCreator}
+                  searchRef={searchRef}
+                />
               </div>
 
               <button
@@ -287,9 +308,7 @@ const Navbar = () => {
 
           <div className="fixed top-0 right-0 bg-white h-screen shadow-2xl w-full sm:max-w-[350px] z-[110] flex flex-col border-l border-gray-100">
             <div className="flex items-center justify-between p-4 border-b border-gray-100">
-              <h2 className="text-xl font-semibold text-gray-800 ml-2">
-                Menu
-              </h2>
+              <h2 className="text-xl font-semibold text-gray-800 ml-2">Menu</h2>
 
               <button
                 type="button"
@@ -312,23 +331,6 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // "use client";
 
@@ -437,7 +439,7 @@ export default Navbar;
 //             value={username}
 //             onChange={handleChange}
 //             placeholder="Search creators..."
-//             className="w-full pl-11 pr-4 h-[44px] rounded-full border border-gray-200 bg-[#F5F1EB] text-gray-800 placeholder-gray-400 
+//             className="w-full pl-11 pr-4 h-[44px] rounded-full border border-gray-200 bg-[#F5F1EB] text-gray-800 placeholder-gray-400
 //     outline-none focus:border-[#C47A2C] focus:ring-4 focus:ring-[#C47A2C]/10 transition-all duration-300 shadow-sm"
 //           />
 
